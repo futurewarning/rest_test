@@ -4,26 +4,6 @@ from project import app, db, User, City, Region
 import inspect
 from dataclasses import dataclass
 
-users = {
-    {'name': 'usr1', 'password': generate_password_hash('123')},
-    {'name': 'usr2', 'password': generate_password_hash('456')}
-}
-
-regions = {
-    {'id': 1, 'name': 'Moscow oblast'},
-    {'id': 2, 'name': 'Vladimir oblast'},
-    {'id': 3, 'name': 'Tver oblast'}
-}
-
-cities = {
-    {'name': 'Moscow', 'region_id': 1},
-    {'name': 'Podolsk', 'region_id': 1},
-    {'name': 'Istra', 'region_id': 1},
-    {'name': 'Vladimir', 'region_id': 2},
-    {'name': 'Kirzhach', 'region_id': 2},
-    {'name': 'Tver', 'region_id': 3},
-    {'name': 'Rzhev', 'region_id': 3}
-}
 
 def dict_to_dataclass(cls, data):
     return cls(
@@ -43,14 +23,19 @@ def create_db():
 
 @cli.command("seed_db")
 def seed_db():
-    for usr in users:
-        db.session.add(dict_to_dataclass(User, usr))
-
-    for reg in regions:
-        db.session.add(dict_to_dataclass(Region, reg))
-
-    for city in cities:
-        db.session.add(dict_to_dataclass(City, city))
+    db.session.add(User(name = 'usr1', password = generate_password_hash('123')))
+    db.session.add(User(name = 'usr2', password = generate_password_hash('456')))
+    db.session.add(Region(id = 1, name = 'Moscow oblast'))
+    db.session.add(Region(id = 2, name = 'Vladimir oblast'))
+    db.session.add(Region(id = 3, name = 'Tver oblast'))
+    db.session.add(City(name = 'Moscow', region_id = 1))
+    db.session.add(City(name = 'Podolsk', region_id = 1))
+    db.session.add(City(name = 'Istra',region_id = 1))
+    db.session.add(City(name = 'Vladimir',region_id = 2))
+    db.session.add(City(name = 'Kirzhach',region_id = 2))
+    db.session.add(City(name = 'Alexandrov',region_id = 2))
+    db.session.add(City(name = 'Tver',region_id = 3))
+    db.session.add(City(name = 'Rzhev', region_id = 3))
 
     db.session.commit()
 
