@@ -13,8 +13,17 @@ api = Api(app, version='1.0', title='Cities API',
           description='Test task')
 db = SQLAlchemy(app)
 
+@dataclass
 class User(db.Model):
     __tablename__ = "users"
+
+    def __init__(self, from_dict):
+        for key in from_dict:
+            setattr(self, key, from_dict[key])
+
+    id: int
+    name: str
+    password: str
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), unique=True, nullable=False)
@@ -23,6 +32,10 @@ class User(db.Model):
 @dataclass
 class Region(db.Model):
     __tablename__ = "regions"
+
+    def __init__(self, from_dict):
+        for key in from_dict:
+            setattr(self, key, from_dict[key])
 
     id: int
     name: str
@@ -37,6 +50,10 @@ class Region(db.Model):
 @dataclass
 class City(db.Model):
     __tablename__ = "cities"
+
+    def __init__(self, from_dict):
+        for key in from_dict:
+            setattr(self, key, from_dict[key])
 
     id: int
     name: str

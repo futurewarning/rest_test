@@ -1,17 +1,30 @@
 from flask.cli import FlaskGroup
 from werkzeug.security import generate_password_hash
 from project import app, db, User, City, Region
+import pandas as pd
 import inspect
 from dataclasses import dataclass
 
+#data loading
+df = pd.read_csv('db.csv')
+idx_region = [{'id': k, 'name': v} for k, v in enumerate(list(df['region'].unique()))]
 
-def dict_to_dataclass(cls, data):
-    return cls(
-        **{
-            key: (data[key] if val.default == val.empty else data.get(key, val.default))
-            for key, val in inspect.signature(cls).parameters.items()
-        }
-    )
+generate_cities = []
+for i, j in df.iterrows():
+    region_id = [item['id'] for item in idx_region if item["name"] == df.at[i, 'region']][0]
+    it = {'id': i, 'name': df.at[i, 'city'], 'region_id': region_id}
+    generate_cities.append(it)
+
+form_regions_cities = []
+for i in idx_region:
+    city_list = [j for j in generate_cities if j['region_id'] == i['id']]
+    form_regions_cities.append({'id': i['id'],'name': i['name']}) #'cities': city_list})
+
+users = [
+    {'id': 1, 'name': 'usr1', 'password': generate_password_hash('123')},
+    {'id': 2, 'name': 'usr2', 'password': generate_password_hash('456')}
+]
+
 
 cli = FlaskGroup(app)
 
@@ -23,19 +36,14 @@ def create_db():
 
 @cli.command("seed_db")
 def seed_db():
-    db.session.add(User(name = 'usr1', password = generate_password_hash('123')))
-    db.session.add(User(name = 'usr2', password = generate_password_hash('456')))
-    db.session.add(Region(id = 1, name = 'Moscow oblast'))
-    db.session.add(Region(id = 2, name = 'Vladimir oblast'))
-    db.session.add(Region(id = 3, name = 'Tver oblast'))
-    db.session.add(City(name = 'Moscow', region_id = 1))
-    db.session.add(City(name = 'Podolsk', region_id = 1))
-    db.session.add(City(name = 'Istra',region_id = 1))
-    db.session.add(City(name = 'Vladimir',region_id = 2))
-    db.session.add(City(name = 'Kirzhach',region_id = 2))
-    db.session.add(City(name = 'Alexandrov',region_id = 2))
-    db.session.add(City(name = 'Tver',region_id = 3))
-    db.session.add(City(name = 'Rzhev', region_id = 3))
+    for usr in users:
+        db.session.add(User(usr))
+
+    for reg in form_regions_cities:
+        db.session.add(Region(reg))
+
+    for city in generate_cities:
+        db.session.add(City(city))
 
     db.session.commit()
 
