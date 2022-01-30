@@ -1,4 +1,4 @@
 # rest_test
-not implemented: auth & migrations
+not implemented: migrations & tests
 #### running the project
 docker-compose up --build
