@@ -13,6 +13,7 @@ app.config.from_object("project.config.Config")
 api = Api(app, version='1.0', title='Cities API',
           description='Test task')
 db = SQLAlchemy(app)
+jwt = JWTManager(app)
 
 @dataclass
 class User(db.Model):
@@ -165,5 +166,5 @@ class RegionOps(Resource):
         region = Region.query.get_or_404(region_id)
         db.session.delete(region)
         db.session.commit()
-        
+
         return jsonify({'message': f'Region {region.name} deleted'})
