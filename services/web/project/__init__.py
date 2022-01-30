@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass, asdict
 from flask import Flask, jsonify, request, Response
+from flask_jwt_extended import jwt_required, create_access_token, JWTManager
 import werkzeug
 werkzeug.cached_property = werkzeug.utils.cached_property
 
@@ -63,6 +64,21 @@ class City(db.Model):
     name = db.Column(db.String(), nullable=False)
     region_id = db.Column(db.Integer, db.ForeignKey('regions.id'), nullable=False)
 
+@api.route("/login")
+class Login(Resource):
+    def post(self):
+        username = api.payload['username']
+        password = api.payload['password']
+        user = User.query.filter_by(name=username).first()
+        if not user:
+            return jsonify({'msg': 'No matching user found'})
+
+        if not check_password_hash(user.password, password):
+            return jsonify({'msg': "Passwords don't match"})
+
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token)
+
 @api.route('/cities')
 class CitiesMng(Resource):
     def get(self):
@@ -71,6 +87,7 @@ class CitiesMng(Resource):
         return jsonify(cities)
 
     #todo api.model with expect
+    @jwt_required()
     def post(self):
         data = api.payload
         name = data['name']
@@ -88,6 +105,7 @@ class RegionsMng(Resource):
 
         return jsonify(regions)
 
+    @jwt_required()
     def post(self):
         data = api.payload
         reg_id = data['id']
@@ -102,8 +120,10 @@ class RegionsMng(Resource):
 class CityOps(Resource):
     def get(self, city_id):
         city = City.query.get_or_404(city_id)
+
         return jsonify(city)
 
+    @jwt_required()
     def put(self):
         city = Region.query.get_or_404(region_id)
         data = api.payload()
@@ -114,6 +134,7 @@ class CityOps(Resource):
 
         return jsonify({'message': f'Region {region.name} updated'})
 
+    @jwt_required()
     def delete(self, city_id):
         city = City.query.get_or_404(city_id)
         db.session.delete(city)
@@ -125,8 +146,10 @@ class CityOps(Resource):
 class RegionOps(Resource):
     def get(self, region_id):
         region = Region.query.get_or_404(region_id)
+
         return jsonify(region)
 
+    @jwt_required()
     def put(self, region_id):
         region = Region.query.get_or_404(region_id)
         data = api.payload()
@@ -137,8 +160,10 @@ class RegionOps(Resource):
 
         return jsonify({'message': f'Region {region.name} updated'})
 
+    @jwt_required()
     def delete(self, region_id):
         region = Region.query.get_or_404(region_id)
         db.session.delete(region)
         db.session.commit()
+        
         return jsonify({'message': f'Region {region.name} deleted'})

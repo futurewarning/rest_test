@@ -18,7 +18,7 @@ for i, j in df.iterrows():
 form_regions_cities = []
 for i in idx_region:
     city_list = [j for j in generate_cities if j['region_id'] == i['id']]
-    form_regions_cities.append({'id': i['id'],'name': i['name']}) #'cities': city_list})
+    form_regions_cities.append({'id': i['id'],'name': i['name']})
 
 users = [
     {'id': 1, 'name': 'usr1', 'password': generate_password_hash('123')},
