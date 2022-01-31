@@ -7,6 +7,7 @@ werkzeug.cached_property = werkzeug.utils.cached_property
 
 from flask_restplus import Api, Resource, fields
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
@@ -14,6 +15,7 @@ api = Api(app, version='1.0', title='Cities API',
           description='Test task')
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 @dataclass
 class User(db.Model):

@@ -13,5 +13,7 @@ fi
 
 python manage.py create_db
 python manage.py seed_db
+flask db init
+flask db upgrade
 
 exec "$@"
