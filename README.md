@@ -1,5 +1,4 @@
 # rest_test
-not implemented: migrations & tests
 #### running the project
 ```console
 docker-compose up --build
@@ -18,3 +17,9 @@ Content-Type: application/json
 foo@bar:~$ export JWT="access_token"
 foo@bar:~$ http [POST, PUT, DELETE] :5000/<route> Authorization:"Bearer $JWT"
 ```
+#### todo:
+- [ ] mv migrations to a sep container
+- [ ] tests
+- [ ] @api.expect() 
+- [ ] docs
+- [ ] models/routes sep
